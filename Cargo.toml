@@ -1,0 +1,36 @@
+[package]
+name = "pomodoro_rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+color-eyre = "0.6"
+crossterm = { version = "0.27", features = ["event-stream"] }
+futures = "0.3"
+indicatif = "0.17"
+serde = { version = "1", features = ["derive"] }
+tap = "1"
+tokio = {version = "1", features = ["macros", "rt", "rt-multi-thread", "time"]}
+tokio-stream = { version = "0.1", features = ["time"] }
+toml = "0.8"
+# scopeguard = "1.2"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+unwrap_used="forbid"
+enum_glob_use = "deny"
+pedantic = "deny"
+nursery = "warn"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+perf = "warn"
+style = "warn"
+suspicious = "warn"
+correctness = "deny"
+single_match = { level = "allow", priority = 127 }
+single_match_else = { level = "allow", priority = 127 }
+unused_async = { level = "warn", priority = 127 }
+result_large_err = { level = "allow", priority = 127 }
+redundant_else = { level = "allow", priority = 127 }
