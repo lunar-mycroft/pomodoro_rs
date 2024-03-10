@@ -7,6 +7,7 @@ use futures::{
     TryStreamExt,
 };
 use indicatif::{ProgressBar, ProgressStyle};
+use notify_rust::Notification;
 use serde::Deserialize;
 use tap::prelude::*;
 use tokio::time::{Instant, Interval};
@@ -18,20 +19,25 @@ async fn main() -> Result<()> {
     color_eyre::install()?;
     let config: Config = std::fs::read_to_string("config.toml")?.pipe_deref(toml::from_str)?;
     loop {
-        for _ in 0..4 {
+        for i in 0..4 {
             let should_quit = timer_bar(
                 config.work_time,
                 Duration::from_millis(25).pipe(tokio::time::interval),
                 "Working\n{elapsed_precise} {wide_bar:.cyan/blue}\n{msg}",
+                "Time to take a break",
             )
             .await?;
             if should_quit {
                 return Ok(());
             }
+            if i == 3 {
+                break;
+            }
             let should_quit = timer_bar(
                 config.short_break,
                 Duration::from_millis(25).pipe(tokio::time::interval),
                 "Short Break\n{elapsed_precise} {wide_bar:.cyan/blue}\n{msg}",
+                "Break's over, back to work",
             )
             .await?;
             if should_quit {
@@ -42,6 +48,7 @@ async fn main() -> Result<()> {
             config.long_break,
             Duration::from_millis(25).pipe(tokio::time::interval),
             "Long Break\n{elapsed_precise} {wide_bar:.cyan/blue}\n{msg}",
+            "Break's over, back to work",
         )
         .await?;
         if should_quit {
@@ -98,7 +105,12 @@ where
     }
 }
 
-async fn timer_bar(duration: Duration, interval: Interval, bar_template: &str) -> Result<bool> {
+async fn timer_bar(
+    duration: Duration,
+    interval: Interval,
+    bar_template: &str,
+    finish_message: &str,
+) -> Result<bool> {
     let bar = {
         let bar = duration
             .as_millis()
@@ -151,6 +163,10 @@ async fn timer_bar(duration: Duration, interval: Interval, bar_template: &str) -
         bar.set_message(command.clone());
     }
     bar.finish_and_clear();
+    Notification::new()
+        .summary(finish_message)
+        .icon("clock")
+        .show()?;
     Ok(false)
 }
 

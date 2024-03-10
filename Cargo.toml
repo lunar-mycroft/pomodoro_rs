@@ -8,6 +8,7 @@ color-eyre = "0.6"
 crossterm = { version = "0.27", features = ["event-stream"] }
 futures = "0.3"
 indicatif = "0.17"
+notify-rust = "4"
 serde = { version = "1", features = ["derive"] }
 tap = "1"
 tokio = {version = "1", features = ["macros", "rt", "rt-multi-thread", "time"]}
